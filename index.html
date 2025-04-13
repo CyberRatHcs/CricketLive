@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>LIVE CRICKET MATCH</title>
     <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -57,6 +57,7 @@
             width: 100%;
             height: auto;
             aspect-ratio: 16/9;
+            background: #000;
         }
         
         .telegram-btn {
@@ -105,6 +106,7 @@
     </div>
     
     <div class="video-container">
+        <!-- TEST STREAM (replace with your working URL) -->
         <video
             id="my-player"
             class="video-js vjs-default-skin"
@@ -113,8 +115,14 @@
             muted
             playsinline
             preload="auto"
+            poster="https://via.placeholder.com/1920x1080?text=Loading+Cricket+Stream"
             data-setup='{"autoplay": "muted"}'>
-            <source src="https://v18tataplaysyndication.akamaized.net/bpk-tv/StarSports_2_Hin_HD_voot_MOB/output03/hdntl=exp=1744631889~acl=%2f*~data=hdntl~hmac=6ccd2c67d51f4f07c078a9f2145449815fe1a047dfc72d38cc1f29121d6f42b9/StarSports_2_Hin_HD_voot_MOB-audio_108038_hin=108000-video=1275600.m3u8" type="application/x-mpegURL">
+            <!-- Try this test stream if yours isn't working -->
+            <source src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" type="application/x-mpegURL">
+            <p class="vjs-no-js">
+                To view this video please enable JavaScript, and consider upgrading to a
+                web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+            </p>
         </video>
     </div>
     
@@ -145,24 +153,19 @@
             }
         });
 
-        // Enable Quality Selector
         player.ready(() => {
+            // Quality selector
             if (player.tech_.sourceHandler_?.name === 'hls') {
                 player.hlsQualitySelector = player.hlsQualitySelector({
                     displayCurrentQuality: true,
                 });
             }
             
-            // Add unmute button
-            const unmuteBtn = document.createElement('button');
-            unmuteBtn.className = 'vjs-mute-control vjs-control vjs-button';
-            unmuteBtn.innerHTML = '<span class="vjs-icon-placeholder"></span>';
-            unmuteBtn.title = 'Unmute';
-            unmuteBtn.addEventListener('click', () => {
-                player.muted(false);
-                unmuteBtn.remove();
+            // Error handling
+            player.on('error', () => {
+                console.error('Stream error - try a different URL');
+                alert('Stream loading failed. Please try again later or check the stream URL.');
             });
-            document.querySelector('.vjs-volume-panel').after(unmuteBtn);
         });
     </script>
 </body>
