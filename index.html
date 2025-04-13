@@ -8,39 +8,317 @@
     <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* [Previous CSS styles remain exactly the same] */
-        /* Add this new style for stream selector */
-        .stream-selector {
-            margin: 15px 0;
-            text-align: center;
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-blue: #00ffff;
+            --neon-green: #00ff7f;
+            --neon-purple: #9400d3;
+            --neon-orange: #ff8c00;
         }
         
-        .stream-btn {
-            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000000, #1a1a2e);
             color: white;
-            border: none;
-            padding: 10px 20px;
-            margin: 5px;
-            border-radius: 50px;
-            cursor: pointer;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            touch-action: pan-y;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-bottom: 3px solid var(--neon-orange);
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+            }
+            to {
+                text-shadow: 0 0 15px var(--neon-green), 0 0 25px var(--neon-green);
+            }
+        }
+        
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .video-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            border: 4px solid var(--neon-purple);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(148, 0, 211, 0.5);
+            background: #000;
+            position: relative;
+        }
+        
+        .video-container::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, 
+                var(--neon-pink), 
+                var(--neon-blue), 
+                var(--neon-green), 
+                var(--neon-orange));
+            z-index: -1;
+            border-radius: 16px;
+            animation: borderGlow 4s linear infinite;
+            background-size: 400% 400%;
+        }
+        
+        @keyframes borderGlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        
+        .video-js {
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            background: #000;
+        }
+        
+        .telegram-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 280px;
+            margin: 25px auto;
+            padding: 15px 25px;
+            background: linear-gradient(45deg, #0088cc, #00bfff);
+            color: white;
+            text-decoration: none;
             font-weight: bold;
+            border-radius: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
             transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(148, 0, 211, 0.5);
+            font-size: 1.1rem;
         }
         
-        .stream-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(148, 0, 211, 0.8);
+        .telegram-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 191, 255, 0.8);
+            background: linear-gradient(45deg, #00bfff, #0088cc);
         }
         
-        .stream-btn.active {
-            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue));
-            box-shadow: 0 0 20px rgba(0, 255, 127, 0.8);
+        .telegram-btn i {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .status-bar {
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+        }
+        
+        .live-indicator {
+            width: 12px;
+            height: 12px;
+            background-color: #ff0000;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(0.95); opacity: 1; }
+        }
+        
+        .vjs-control-bar {
+            background: rgba(0, 0, 0, 0.7) !important;
+            height: 50px !important;
+        }
+        
+        .vjs-big-play-button {
+            display: none !important;
+        }
+        
+        .vjs-progress-control {
+            flex-grow: 1;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        
+        /* Refresh indicator */
+        .refresh-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .refresh-icon {
+            margin-right: 8px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--neon-blue);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .video-container {
+                border-width: 3px;
+                border-radius: 8px;
+            }
+            
+            .telegram-btn {
+                width: 240px;
+                padding: 12px 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- [Previous HTML structure remains the same until before the scripts] -->
+    <div class="header">
+        <h1>WATCH LIVE CRICKET</h1>
+    </div>
+    
+    <div class="main-container" id="main-container">
+        <div class="refresh-indicator" id="refresh-indicator">
+            <i class="fas fa-sync-alt refresh-icon"></i>
+            <span>Release to refresh</span>
+        </div>
+        
+        <div class="loading-spinner" id="loading-spinner">
+            <div class="spinner"></div>
+        </div>
+        
+        <div class="video-container" oncontextmenu="return false;">
+            <video
+                id="cricket-stream"
+                class="video-js vjs-default-skin"
+                controls
+                autoplay
+                muted
+                playsinline
+                preload="auto"
+                poster="https://via.placeholder.com/1920x1080/000000/FFFFFF/?text=Loading+Cricket+Stream"
+                data-setup='{}'>
+                <source src="https://v18tataplaysyndication.akamaized.net/bpk-tv/StarSports_2_Hin_HD_voot_MOB/output03/hdntl=exp=1744631889~acl=%2f*~data=hdntl~hmac=6ccd2c67d51f4f07c078a9f2145449815fe1a047dfc72d38cc1f29121d6f42b9/StarSports_2_Hin_HD_voot_MOB-audio_108038_hin=108000-video=1275600.m3u8" type="application/x-mpegURL">
+                <p class="vjs-no-js">
+                    To view this video please enable JavaScript, and consider upgrading to a
+                    web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                </p>
+            </video>
+            
+            <div class="error-message" id="error-message">
+                <h3>Stream Error</h3>
+                <p id="error-details">The stream could not be loaded. Please try again.</p>
+                <button class="retry-btn" id="retry-btn">Retry</button>
+            </div>
+            
+            <div class="status-bar">
+                <div class="status-indicator">
+                    <div class="live-indicator"></div>
+                    <span>LIVE NOW</span>
+                </div>
+                <div id="stream-quality">Quality: Auto</div>
+                <div id="connection-status"><i class="fas fa-circle" style="color: #0f0;"></i> Stable Connection</div>
+            </div>
+        </div>
+        
+        <a href="https://t.me/+ylnL4bR-7gg5ZTA1" class="telegram-btn" target="_blank">
+            <i class="fab fa-telegram"></i> JOIN TELEGRAM CHANNEL
+        </a>
+    </div>
+
+    <footer>
+        Enjoy the match! Pull down to refresh if stream stops working.
+    </footer>
 
     <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-quality-levels/2.1.0/videojs-contrib-quality-levels.min.js"></script>
@@ -48,45 +326,42 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const config = {
-                streams: [
-                    {
-                        name: "Primary Stream",
-                        url: 'https://ee4ee8c03a26.eu-central-1.playback.live-video.net/api/video/v1/eu-central-1.755921704393.channel.LOohfipmCQDP.m3u8',
-                        active: true
-                    },
-                    {
-                        name: "Backup Stream 1",
-                        url: 'https://v18tataplaysyndication.akamaized.net/bpk-tv/StarSports_2_Hin_HD_voot_MOB/output03/hdntl=exp=1744631889~acl=%2f*~data=hdntl~hmac=6ccd2c67d51f4f07c078a9f2145449815fe1a047dfc72d38cc1f29121d6f42b9/StarSports_2_Hin_HD_voot_MOB-audio_108038_hin=108000-video=1275600.m3u8',
-                        active: false
-                    }
-                ],
-                autoPlay: true,
-                maxRetries: 3,
-                retryDelay: 3000
-            };
-
-            // Create stream selector buttons
-            const streamSelector = document.createElement('div');
-            streamSelector.className = 'stream-selector';
+        // Disable zooming and text selection
+        document.addEventListener('keydown', function(e) {
+            // Disable zooming with Ctrl+Plus/Minus
+            if ((e.ctrlKey && (e.key === '+' || e.key === '-')) || e.key === 'ZoomIn' || e.key === 'ZoomOut') {
+                e.preventDefault();
+            }
             
-            config.streams.forEach((stream, index) => {
-                const btn = document.createElement('button');
-                btn.className = `stream-btn ${stream.active ? 'active' : ''}`;
-                btn.textContent = stream.name;
-                btn.onclick = () => switchStream(index);
-                streamSelector.appendChild(btn);
-            });
-            
-            document.querySelector('.main-container').insertBefore(streamSelector, document.querySelector('.video-container'));
-
-            // Initialize player
+            // Disable developer tools
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+                e.preventDefault();
+            }
+        });
+        
+        // Disable pinch zoom on touch devices
+        document.addEventListener('touchmove', function(e) {
+            if (e.scale !== 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // Disable text selection and context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+        });
+        
+        // Initialize the player
+        document.addEventListener('DOMContentLoaded', function() {
             const player = videojs('cricket-stream', {
                 fluid: true,
                 responsive: true,
                 liveui: true,
-                autoplay: config.autoPlay ? 'muted' : false,
+                autoplay: 'muted',
                 controlBar: {
                     children: [
                         'playToggle',
@@ -104,50 +379,22 @@
                     ]
                 }
             });
-
+            
             // Remove big play button
             player.bigPlayButton.hide();
             
-            let currentStreamIndex = config.streams.findIndex(s => s.active);
-            let retryCount = 0;
-
-            // Function to switch streams
-            function switchStream(index) {
-                if (index === currentStreamIndex) return;
-                
-                // Update UI
-                document.querySelectorAll('.stream-btn').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.stream-btn')[index].classList.add('active');
-                
-                currentStreamIndex = index;
-                retryCount = 0;
-                loadStream();
-            }
-
-            // Function to load current stream
-            function loadStream() {
-                showLoading();
-                const stream = config.streams[currentStreamIndex];
-                
+            // Set up retry button
+            document.getElementById('retry-btn').addEventListener('click', function() {
+                hideError();
                 player.src({
-                    src: stream.url,
-                    type: 'application/x-mpegURL',
-                    withCredentials: false
+                    src: player.currentSrc(),
+                    type: 'application/x-mpegURL'
                 });
-
-                player.ready(() => {
-                    player.play().catch(e => {
-                        console.error("Autoplay failed:", e);
-                        showError("Autoplay was prevented. Please click the play button.");
-                    });
-                });
-            }
-
-            // Initial stream load
-            loadStream();
-
+                player.play();
+            });
+            
             // Enable quality selector
-            player.ready(() => {
+            player.ready(function() {
                 if (player.tech_.sourceHandler_ && player.tech_.sourceHandler_.name === 'hls') {
                     player.hlsQualitySelector = player.hlsQualitySelector({
                         displayCurrentQuality: true,
@@ -161,48 +408,110 @@
                 unmuteBtn.className = 'vjs-mute-control vjs-control vjs-button';
                 unmuteBtn.innerHTML = '<span class="vjs-icon-placeholder"></span>';
                 unmuteBtn.title = 'Unmute';
-                unmuteBtn.addEventListener('click', () => {
+                unmuteBtn.addEventListener('click', function() {
                     player.muted(false);
                     unmuteBtn.remove();
                 });
                 document.querySelector('.vjs-volume-panel').after(unmuteBtn);
             });
-
-            // Error handling with retries
-            player.on('error', () => {
-                if (retryCount < config.maxRetries) {
-                    retryCount++;
-                    showError(`Connection lost. Retrying (${retryCount}/${config.maxRetries})...`);
-                    
-                    setTimeout(() => {
-                        loadStream();
-                    }, config.retryDelay);
-                } else {
-                    // Try next available stream
-                    const nextIndex = (currentStreamIndex + 1) % config.streams.length;
-                    if (nextIndex !== currentStreamIndex) {
-                        switchStream(nextIndex);
-                    } else {
-                        showError("All streams failed. Please try again later.");
-                    }
-                }
+            
+            // Connection status monitoring
+            let connectionStatus = document.getElementById('connection-status');
+            
+            player.on('error', function() {
+                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #f00;"></i> Connection Error';
+                showError("Stream connection lost. Trying to reconnect...");
+                
+                setTimeout(function() {
+                    player.src({
+                        src: player.currentSrc(),
+                        type: 'application/x-mpegURL'
+                    });
+                    player.play();
+                }, 3000);
             });
-
-            player.on('playing', () => {
+            
+            player.on('playing', function() {
+                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #0f0;"></i> Stable Connection';
                 hideError();
                 hideLoading();
-                document.getElementById('connection-status').innerHTML = 
-                    '<i class="fas fa-circle" style="color: #0f0;"></i> Stable Connection';
             });
-
-            player.on('waiting', () => {
-                document.getElementById('connection-status').innerHTML = 
-                    '<i class="fas fa-circle" style="color: #ff0;"></i> Buffering...';
-            });
-
-            // [Rest of your existing JavaScript remains the same]
             
-            /* Helper functions (you should already have these) */
+            player.on('waiting', function() {
+                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #ff0;"></i> Buffering...';
+            });
+            
+            // Update quality display
+            player.on('qualitychange', function() {
+                document.getElementById('stream-quality').textContent = 'Quality: ' + player.currentQuality();
+            });
+            
+            // Swipe to refresh implementation
+            const mainContainer = document.getElementById('main-container');
+            const refreshIndicator = document.getElementById('refresh-indicator');
+            let touchStartY = 0;
+            let currentY = 0;
+            let isRefreshing = false;
+            
+            mainContainer.addEventListener('touchstart', function(e) {
+                if (window.scrollY === 0 && !isRefreshing) {
+                    touchStartY = e.touches[0].clientY;
+                }
+            }, { passive: true });
+            
+            mainContainer.addEventListener('touchmove', function(e) {
+                if (!touchStartY) return;
+                
+                currentY = e.touches[0].clientY;
+                const scrollY = window.scrollY;
+                
+                // Only trigger refresh if at top of page
+                if (scrollY === 0) {
+                    const distance = currentY - touchStartY;
+                    
+                    if (distance > 0) {
+                        e.preventDefault();
+                        refreshIndicator.style.opacity = Math.min(1, distance / 100);
+                        
+                        if (distance > 150) {
+                            refreshIndicator.querySelector('span').textContent = 'Release to refresh';
+                        } else {
+                            refreshIndicator.querySelector('span').textContent = 'Pull down to refresh';
+                        }
+                    }
+                }
+            }, { passive: false });
+            
+            mainContainer.addEventListener('touchend', function(e) {
+                if (!touchStartY) return;
+                
+                const distance = currentY - touchStartY;
+                
+                if (distance > 150 && window.scrollY === 0) {
+                    isRefreshing = true;
+                    refreshIndicator.querySelector('span').textContent = 'Refreshing...';
+                    refreshIndicator.style.opacity = 1;
+                    
+                    // Reload the stream
+                    player.src({
+                        src: player.currentSrc(),
+                        type: 'application/x-mpegURL'
+                    });
+                    player.play();
+                    
+                    setTimeout(function() {
+                        refreshIndicator.style.opacity = 0;
+                        isRefreshing = false;
+                    }, 1000);
+                } else {
+                    refreshIndicator.style.opacity = 0;
+                }
+                
+                touchStartY = 0;
+                currentY = 0;
+            }, { passive: true });
+            
+            // Helper functions
             function showError(message) {
                 const errorMsg = document.getElementById('error-message');
                 const errorDetails = document.getElementById('error-details');
