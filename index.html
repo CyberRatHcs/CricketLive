@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>🔴 LIVE CRICKET STREAMING</title>
     <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
@@ -26,6 +26,7 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
+            touch-action: manipulation;
         }
         
         .header {
@@ -209,12 +210,24 @@
             }
         }
         
-        /* Disable right-click context menu */
+        /* Security and UX enhancements */
         .video-container {
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            -webkit-touch-callout: none;
+        }
+        
+        /* Overlay to prevent interactions */
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            background: transparent;
         }
         
         /* Error message styling */
@@ -251,6 +264,7 @@
     
     <div class="main-container">
         <div class="video-container" oncontextmenu="return false;">
+            <div class="video-overlay" id="video-overlay"></div>
             <video
                 id="cricket-stream"
                 class="video-js vjs-default-skin"
@@ -261,7 +275,6 @@
                 preload="auto"
                 poster="https://via.placeholder.com/1920x1080/000000/FFFFFF/?text=Loading+Cricket+Stream"
                 data-setup='{}'>
-                <!-- No source URL in HTML -->
                 <p class="vjs-no-js">
                     To view this video please enable JavaScript, and consider upgrading to a
                     web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
@@ -299,65 +312,60 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     
     <script>
-        // Disable right-click context menu
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-        
-        // Disable keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-            if (e.key === 'F12' || 
-                (e.ctrlKey && e.shiftKey && e.key === 'I') || 
-                (e.ctrlKey && e.shiftKey && e.key === 'J') || 
-                (e.ctrlKey && e.key === 'u') || 
-                (e.ctrlKey && e.key === 'U')) {
+        // Security and protection measures
+        (function() {
+            // Disable all context menus
+            document.addEventListener('contextmenu', function(e) {
                 e.preventDefault();
-            }
-        });
-        
-        // Backup stream URLs in case primary fails
-        const streamSources = [
-            // Primary stream (base64 encoded)
-            'aHR0cHM6Ly92MTh0YXRhcGxheXN5bmRpY2F0aW9uLmFrYW1haXplZC5uZXQvYnBrLXR2L1N0YXJTcG9ydHNfMl9IaW5fSERfdm9vdF9NT0Ivb3V0cHV0MDMvaGRudGw9ZXhwPTE3NDQ2MzE4ODl+YWNsPSUyZip+ZGF0YT1oZG50bH5obWFjPTZjY2QyYzY3ZDUxZjRmMDdjMDc4YTlmMjE0NTQ0OTgxNWZlMWEwNDdkZmM3MmQzOGNjMWYyOTEyMWQ2ZjQyYjkvU3RhclNwb3J0c18yX0hpbl9IRF92b290X01PQi1hdWRpb18xMDgwMzhfaGluPTEwODAwMC12aWRlbz0xMjc1NjAwLm0zdTg=',
-            
-            // Backup stream 1 (if you have one)
-            // 'aHR0cHM6Ly9leGFtcGxlLmNvbS9iYWNrdXAuc3RyZWFtL20zdTg=',
-            
-            // Backup stream 2 (if you have one)
-            // 'aHR0cHM6Ly9hbm90aGVyLmV4YW1wbGUvYmFja3VwMi5zdHJlYW0vbTN1OA=='
-        ];
-        
-        let currentStreamIndex = 0;
-        
-        // Function to decode the URL
-        function decodeUrl(encoded) {
-            return atob(encoded);
-        }
-        
-        // Function to load the stream
-        function loadStream(player, index) {
-            try {
-                const streamUrl = decodeUrl(streamSources[index]);
-                player.src({
-                    src: streamUrl,
-                    type: 'application/x-mpegURL',
-                    withCredentials: false
-                });
-                
-                player.ready(function() {
-                    player.play().catch(e => {
-                        console.error("Autoplay failed:", e);
-                        showError("Autoplay was prevented. Please click the play button.");
-                    });
-                });
-                
-                return true;
-            } catch (e) {
-                console.error("Error loading stream:", e);
                 return false;
+            }, false);
+            
+            // Disable text selection
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            }, false);
+            
+            // Disable keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+                if (e.key === 'F12' || 
+                    (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                    (e.ctrlKey && e.shiftKey && e.key === 'J') || 
+                    (e.ctrlKey && e.key === 'u') || 
+                    (e.ctrlKey && e.key === 'U') ||
+                    (e.ctrlKey && e.key === 'c') ||
+                    (e.ctrlKey && e.key === 'C') ||
+                    (e.ctrlKey && e.key === 'v') ||
+                    (e.ctrlKey && e.key === 'V') ||
+                    (e.ctrlKey && e.key === 's') ||
+                    (e.ctrlKey && e.key === 'S')) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable zooming with Ctrl+Plus/Minus
+                if ((e.ctrlKey && (e.key === '+' || e.key === '-')) || e.key === 'ZoomIn' || e.key === 'ZoomOut') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable pinch zoom on touch devices
+            document.addEventListener('touchmove', function(e) {
+                if (e.scale !== 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            // Prevent iframe embedding
+            if (window.top !== window.self) {
+                window.top.location = window.self.location;
             }
-        }
+        })();
+        
+        // Stream URL (use HTTPS for secure connection)
+        const streamUrl = "https://v18tataplaysyndication.akamaized.net/bpk-tv/StarSports_2_Hin_HD_voot_MOB/output03/hdntl=exp=1744631889~acl=%2f*~data=hdntl~hmac=6ccd2c67d51f4f07c078a9f2145449815fe1a047dfc72d38cc1f29121d6f42b9/StarSports_2_Hin_HD_voot_MOB-audio_108038_hin=108000-video=1275600.m3u8";
         
         // Function to show error message
         function showError(message) {
@@ -372,6 +380,7 @@
             document.getElementById('error-message').style.display = 'none';
         }
         
+        // Initialize the player
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize player with no source
             const player = videojs('cricket-stream', {
@@ -403,14 +412,32 @@
             // Set up retry button
             document.getElementById('retry-btn').addEventListener('click', function() {
                 hideError();
-                currentStreamIndex = (currentStreamIndex + 1) % streamSources.length;
-                loadStream(player, currentStreamIndex);
+                loadStream(player);
             });
             
-            // Try to load the initial stream
-            if (!loadStream(player, currentStreamIndex)) {
-                showError("Failed to load the stream. Please try again later.");
+            // Load the stream
+            function loadStream(player) {
+                try {
+                    player.src({
+                        src: streamUrl,
+                        type: 'application/x-mpegURL',
+                        withCredentials: false
+                    });
+                    
+                    player.ready(function() {
+                        player.play().catch(e => {
+                            console.error("Autoplay failed:", e);
+                            showError("Autoplay was prevented. Please click the play button.");
+                        });
+                    });
+                } catch (e) {
+                    console.error("Error loading stream:", e);
+                    showError("Failed to load the stream. Please try again.");
+                }
             }
+            
+            // Initial stream load
+            loadStream(player);
             
             // Enable quality selector
             player.ready(function() {
@@ -436,19 +463,13 @@
             
             // Connection status monitoring
             let connectionStatus = document.getElementById('connection-status');
-            let lastUpdateTime = Date.now();
             
             player.on('error', function() {
                 connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #f00;"></i> Connection Error';
                 showError("Stream connection lost. Trying to reconnect...");
                 
                 setTimeout(function() {
-                    currentStreamIndex = (currentStreamIndex + 1) % streamSources.length;
-                    if (!loadStream(player, currentStreamIndex)) {
-                        showError("Failed to reconnect. Please try again.");
-                    } else {
-                        hideError();
-                    }
+                    loadStream(player);
                 }, 3000);
             });
             
@@ -466,10 +487,24 @@
                 document.getElementById('stream-quality').textContent = 'Quality: ' + player.currentQuality();
             });
             
-            // Obfuscate player source in memory
+            // Prevent URL extraction from player
             Object.defineProperty(player, 'currentSrc', {
                 get: function() {
                     return '';
+                }
+            });
+            
+            // Add transparent overlay to prevent right-click on video
+            const overlay = document.getElementById('video-overlay');
+            overlay.addEventListener('click', function() {
+                // Allow clicks to pass through to controls
+                const rect = this.getBoundingClientRect();
+                const y = event.clientY - rect.top;
+                
+                // Only block clicks in the video area (not control bar)
+                if (y < rect.height - 50) { // Approximate control bar height
+                    event.preventDefault();
+                    return false;
                 }
             });
         });
