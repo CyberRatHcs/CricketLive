@@ -153,7 +153,7 @@
             padding: 12px 20px;
             background: rgba(0, 0, 0, 0.7);
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             font-size: 0.9rem;
             color: #ccc;
@@ -190,6 +190,23 @@
         
         .vjs-progress-control {
             flex-grow: 1;
+        }
+        
+        /* Custom zoom buttons */
+        .vjs-zoom-buttons {
+            display: flex;
+            margin-left: auto;
+        }
+        
+        .vjs-zoom-in, .vjs-zoom-out {
+            cursor: pointer;
+            color: white;
+            padding: 0 10px;
+            font-size: 18px;
+        }
+        
+        .vjs-zoom-in:hover, .vjs-zoom-out:hover {
+            color: var(--neon-blue);
         }
         
         footer {
@@ -306,8 +323,6 @@
                     <div class="live-indicator"></div>
                     <span>LIVE NOW</span>
                 </div>
-                <div id="stream-quality">Quality: Auto</div>
-                <div id="connection-status"><i class="fas fa-circle" style="color: #0f0;"></i> Stable Connection</div>
             </div>
         </div>
         
@@ -321,8 +336,6 @@
     </footer>
 
     <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-quality-levels/2.1.0/videojs-contrib-quality-levels.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-hls-quality-selector/1.1.4/videojs-hls-quality-selector.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     
     <script>
@@ -374,7 +387,6 @@
                         'remainingTimeDisplay',
                         'customControlSpacer',
                         'playbackRateMenuButton',
-                        'qualitySelector',
                         'fullscreenToggle'
                     ]
                 }
@@ -382,6 +394,44 @@
             
             // Remove big play button
             player.bigPlayButton.hide();
+            
+            // Add custom zoom buttons
+            const zoomInBtn = document.createElement('div');
+            zoomInBtn.className = 'vjs-zoom-in';
+            zoomInBtn.innerHTML = '<i class="fas fa-search-plus"></i>';
+            zoomInBtn.title = 'Zoom In';
+            zoomInBtn.onclick = () => zoomVideo(1.2);
+            
+            const zoomOutBtn = document.createElement('div');
+            zoomOutBtn.className = 'vjs-zoom-out';
+            zoomOutBtn.innerHTML = '<i class="fas fa-search-minus"></i>';
+            zoomOutBtn.title = 'Zoom Out';
+            zoomOutBtn.onclick = () => zoomVideo(0.8);
+            
+            const zoomButtons = document.createElement('div');
+            zoomButtons.className = 'vjs-zoom-buttons vjs-control';
+            zoomButtons.appendChild(zoomInBtn);
+            zoomButtons.appendChild(zoomOutBtn);
+            
+            // Add zoom buttons to control bar
+            const controlBar = player.controlBar.el();
+            const fullscreenBtn = controlBar.querySelector('.vjs-fullscreen-control');
+            controlBar.insertBefore(zoomButtons, fullscreenBtn);
+            
+            // Video zoom function
+            function zoomVideo(factor) {
+                const video = player.el().querySelector('video');
+                const currentTransform = window.getComputedStyle(video).transform;
+                let matrix = currentTransform === 'none' ? 
+                    [1, 0, 0, 1, 0, 0] : 
+                    currentTransform.match(/matrix\((.+)\)/)[1].split(',').map(Number);
+                
+                // Apply scaling
+                matrix[0] *= factor;  // scaleX
+                matrix[3] *= factor;  // scaleY
+                
+                video.style.transform = `matrix(${matrix.join(',')})`;
+            }
             
             // Set up retry button
             document.getElementById('retry-btn').addEventListener('click', function() {
@@ -393,33 +443,8 @@
                 player.play();
             });
             
-            // Enable quality selector
-            player.ready(function() {
-                if (player.tech_.sourceHandler_ && player.tech_.sourceHandler_.name === 'hls') {
-                    player.hlsQualitySelector = player.hlsQualitySelector({
-                        displayCurrentQuality: true,
-                        placementIndex: 1,
-                        vjsIconClass: 'vjs-icon-cog'
-                    });
-                }
-                
-                // Add unmute button
-                const unmuteBtn = document.createElement('button');
-                unmuteBtn.className = 'vjs-mute-control vjs-control vjs-button';
-                unmuteBtn.innerHTML = '<span class="vjs-icon-placeholder"></span>';
-                unmuteBtn.title = 'Unmute';
-                unmuteBtn.addEventListener('click', function() {
-                    player.muted(false);
-                    unmuteBtn.remove();
-                });
-                document.querySelector('.vjs-volume-panel').after(unmuteBtn);
-            });
-            
             // Connection status monitoring
-            let connectionStatus = document.getElementById('connection-status');
-            
             player.on('error', function() {
-                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #f00;"></i> Connection Error';
                 showError("Stream connection lost. Trying to reconnect...");
                 
                 setTimeout(function() {
@@ -432,18 +457,12 @@
             });
             
             player.on('playing', function() {
-                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #0f0;"></i> Stable Connection';
                 hideError();
                 hideLoading();
             });
             
             player.on('waiting', function() {
-                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #ff0;"></i> Buffering...';
-            });
-            
-            // Update quality display
-            player.on('qualitychange', function() {
-                document.getElementById('stream-quality').textContent = 'Quality: ' + player.currentQuality();
+                showLoading();
             });
             
             // Swipe to refresh implementation
