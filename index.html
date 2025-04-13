@@ -16,6 +16,11 @@
             --neon-color: #0ff;
         }
         
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -58,7 +63,14 @@
                 text-shadow: none;
             }
         }
-       
+        
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
         
         .video-wrapper {
             width: 100%;
@@ -172,21 +184,17 @@
             .neon-text {
                 font-size: 1.5rem;
             }
-            
-            .logo-container {
-                flex-direction: column;
-                gap: 5px;
+        
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo-container">
-            <img src="https://www.freepnglogos.com/uploads/cricket-png/cricket-sports-icon-3.png" alt="Cricket Logo" class="cricket-logo">
+   
             <h1 class="neon-text">WATCH LIVE CRICKET</h1>
             <img src="https://www.freepnglogos.com/uploads/cricket-png/cricket-sports-icon-3.png" alt="Cricket Logo" class="cricket-logo">
-        </div>
+
     </header>
     
     <div class="container">
@@ -217,11 +225,12 @@
     </div>
     
     <footer>
-        <a href="https://t.me/+ylnL4bR-7gg5ZTA1" class="telegram-btn" target="_blank">
+        <a href="https://t.me/yourchannel" class="telegram-btn" target="_blank">
             <i class="fab fa-telegram"></i>
-            JOIN OUR TELEGRAM
+            Click Here To Join Telegram 
         </a>
-        <p>JOIN OUR TELEGRAM CHANNEL🔥</p>
+      
+          <p>⚡JOIN OUR TELEGRAM CHANNEL FOR MORE INFO ⚡</p>
     </footer>
 
     <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
@@ -297,4 +306,4 @@
             
             // Auto-retry on error
             player.on('error', function() {
-                setTimeout(function()
+                setTimeout(function(),
