@@ -163,6 +163,24 @@
             display: flex;
             align-items: center;
         }
+
+.vjs-zoom-buttons {
+            display: flex;
+            margin-left: auto;
+        }
+        
+        .vjs-zoom-in, .vjs-zoom-out {
+            cursor: pointer;
+            color: white;
+            padding: 0 10px;
+            font-size: 18px;
+        }
+        
+        .vjs-zoom-in:hover, .vjs-zoom-out:hover {
+            color: var(--neon-blue);
+        }
+        
+
         
         .live-indicator {
             width: 12px;
@@ -193,21 +211,6 @@
         }
         
         /* Custom zoom buttons */
-        .vjs-zoom-buttons {
-            display: flex;
-            margin-left: auto;
-        }
-        
-        .vjs-zoom-in, .vjs-zoom-out {
-            cursor: pointer;
-            color: white;
-            padding: 0 10px;
-            font-size: 18px;
-        }
-        
-        .vjs-zoom-in:hover, .vjs-zoom-out:hover {
-            color: var(--neon-blue);
-        }
         
         footer {
             text-align: center;
