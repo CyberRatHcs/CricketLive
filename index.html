@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Star Sports Hindi HD - Stream Player</title>
+    <title>WATCH LIVE CRICKET | Star Sports Hindi HD</title>
     <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -13,6 +13,7 @@
             --text-color: #f5f5f5;
             --bg-color: #121212;
             --control-bg: rgba(0, 0, 0, 0.7);
+            --neon-color: #0ff;
         }
         
         * {
@@ -31,16 +32,45 @@
         }
         
         header {
-            background-color: var(--secondary-color);
+            background: linear-gradient(135deg, #1e3f8b 0%, #0d1b3a 100%);
             padding: 1rem;
             text-align: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
         
-        .logo {
-            height: 40px;
-            margin-right: 10px;
-            vertical-align: middle;
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .cricket-logo {
+            height: 50px;
+            filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.7));
+        }
+        
+        .neon-text {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--neon-color);
+            text-shadow: 0 0 10px var(--neon-color), 
+                         0 0 20px var(--neon-color), 
+                         0 0 30px var(--neon-color);
+            animation: flicker 1.5s infinite alternate;
+            letter-spacing: 2px;
+        }
+        
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow: 0 0 10px var(--neon-color), 
+                             0 0 20px var(--neon-color), 
+                             0 0 30px var(--neon-color);
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
         }
         
         .container {
@@ -115,11 +145,39 @@
             100% { opacity: 1; }
         }
         
+        .telegram-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #0088cc;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .telegram-btn:hover {
+            background-color: #006699;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .telegram-btn i {
+            font-size: 1.2rem;
+        }
+        
         footer {
             text-align: center;
             padding: 15px;
             font-size: 12px;
             background-color: var(--secondary-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         @media (max-width: 768px) {
@@ -131,15 +189,25 @@
                 flex-direction: column;
                 gap: 5px;
             }
+            
+            .neon-text {
+                font-size: 1.5rem;
+            }
+            
+            .logo-container {
+                flex-direction: column;
+                gap: 5px;
+            }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>
-            <img src="https://www.starsports.com/favicon.ico" alt="Star Sports Logo" class="logo">
-            Star Sports Hindi HD
-        </h1>
+        <div class="logo-container">
+            <img src="https://www.freepnglogos.com/uploads/cricket-png/cricket-sports-icon-3.png" alt="Cricket Logo" class="cricket-logo">
+            <h1 class="neon-text">WATCH LIVE CRICKET</h1>
+            <img src="https://www.freepnglogos.com/uploads/cricket-png/cricket-sports-icon-3.png" alt="Cricket Logo" class="cricket-logo">
+        </div>
     </header>
     
     <div class="container">
@@ -155,4 +223,419 @@
                 <p class="vjs-no-js">
                     To view this video please enable JavaScript, and consider upgrading to a
                     web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-                </
+                </p>
+            </video>
+            
+            <div class="status-bar">
+                <div class="status-indicator">
+                    <div class="live-indicator"></div>
+                    <span>LIVE</span>
+                </div>
+                <div>Stream Quality: Auto</div>
+                <div id="connection-status"><i class="fas fa-circle" style="color: #0f0;"></i> Stable Connection</div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <a href="https://t.me/yourchannel" class="telegram-btn" target="_blank">
+            <i class="fab fa-telegram"></i>
+            JOIN OUR TELEGRAM
+        </a>
+        <p>© 2024 Cricket Streaming. All rights reserved.</p>
+    </footer>
+
+    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-quality-levels/2.1.0/videojs-contrib-quality-levels.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-hls-quality-selector/1.1.4/videojs-hls-quality-selector.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the player
+            const player = videojs('stream-player', {
+                fluid: true,
+                responsive: true,
+                liveui: true,
+                controlBar: {
+                    children: [
+                        'playToggle',
+                        'volumePanel',
+                        'currentTimeDisplay',
+                        'timeDivider',
+                        'durationDisplay',
+                        'progressControl',
+                        'liveDisplay',
+                        'remainingTimeDisplay',
+                        'customControlSpacer',
+                        'playbackRateMenuButton',
+                        'qualitySelector',
+                        'fullscreenToggle'
+                    ]
+                }
+            });
+            
+            // Enable quality selector
+            player.ready(function() {
+                if (player.tech_.sourceHandler_ && player.tech_.sourceHandler_.name === 'hls') {
+                    player.hlsQualitySelector = player.hlsQualitySelector({
+                        displayCurrentQuality: true,
+                        placementIndex: 1,
+                        vjsIconClass: 'vjs-icon-cog'
+                    });
+                }
+            });
+            
+            // Connection status monitoring
+            let connectionStatus = document.getElementById('connection-status');
+            let lastUpdateTime = Date.now();
+            
+            player.on('error', function() {
+                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #f00;"></i> Connection Error';
+            });
+            
+            player.on('playing', function() {
+                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #0f0;"></i> Stable Connection';
+            });
+            
+            player.on('waiting', function() {
+                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #ff0;"></i> Buffering...';
+            });
+            
+            // Check for stalled playback
+            setInterval(function() {
+                if (player.paused()) return;
+                
+                const currentTime = player.currentTime();
+                const now = Date.now();
+                
+                if (currentTime === lastUpdateTime && now - lastUpdateTime > 3000) {
+                    connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #f80;"></i> Slow Connection';
+                }
+                
+                lastUpdateTime = currentTime;
+            }, 1000);
+            
+            // Auto-retry on error
+            player.on('error', function() {
+                setTimeout(function() m<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WATCH LIVE CRICKET | Star Sports Hindi HD</title>
+    <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2a5bd7;
+            --secondary-color: #1e3f8b;
+            --text-color: #f5f5f5;
+            --bg-color: #121212;
+            --control-bg: rgba(0, 0, 0, 0.7);
+            --neon-color: #0ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e3f8b 0%, #0d1b3a 100%);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .cricket-logo {
+            height: 50px;
+            filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.7));
+        }
+        
+        .neon-text {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--neon-color);
+            text-shadow: 0 0 10px var(--neon-color), 
+                         0 0 20px var(--neon-color), 
+                         0 0 30px var(--neon-color);
+            animation: flicker 1.5s infinite alternate;
+            letter-spacing: 2px;
+        }
+        
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow: 0 0 10px var(--neon-color), 
+                             0 0 20px var(--neon-color), 
+                             0 0 30px var(--neon-color);
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
+        }
+        
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .video-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .video-js {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16/9;
+            background-color: #000;
+        }
+        
+        .vjs-control-bar {
+            background: var(--control-bg) !important;
+        }
+        
+        .vjs-big-play-button {
+            background-color: var(--primary-color) !important;
+            border: none !important;
+            border-radius: 50% !important;
+            width: 80px !important;
+            height: 80px !important;
+            line-height: 80px !important;
+            margin-left: -40px !important;
+            margin-top: -40px !important;
+        }
+        
+        .vjs-play-progress {
+            background-color: var(--primary-color) !important;
+        }
+        
+        .status-bar {
+            padding: 10px;
+            background-color: var(--secondary-color);
+            text-align: center;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+        }
+        
+        .live-indicator {
+            background-color: #ff0000;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .telegram-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #0088cc;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .telegram-btn:hover {
+            background-color: #006699;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .telegram-btn i {
+            font-size: 1.2rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            background-color: var(--secondary-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .video-wrapper {
+                border-radius: 0;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .neon-text {
+                font-size: 1.5rem;
+            }
+            
+            .logo-container {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="https://www.freepnglogos.com/uploads/cricket-png/cricket-sports-icon-3.png" alt="Cricket Logo" class="cricket-logo">
+            <h1 class="neon-text">WATCH LIVE CRICKET</h1>
+            <img src="https://www.freepnglogos.com/uploads/cricket-png/cricket-sports-icon-3.png" alt="Cricket Logo" class="cricket-logo">
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="video-wrapper">
+            <video
+                id="stream-player"
+                class="video-js vjs-default-skin vjs-big-play-centered"
+                controls
+                preload="auto"
+                poster="https://via.placeholder.com/1920x1080?text=Star+Sports+Hindi+HD"
+                data-setup='{}'>
+                <source src="https://v18tataplaysyndication.akamaized.net/bpk-tv/StarSports_2_Hin_HD_voot_MOB/output03/hdntl=exp=1744631889~acl=%2f*~data=hdntl~hmac=6ccd2c67d51f4f07c078a9f2145449815fe1a047dfc72d38cc1f29121d6f42b9/StarSports_2_Hin_HD_voot_MOB-audio_108038_hin=108000-video=1275600.m3u8" type="application/x-mpegURL">
+                <p class="vjs-no-js">
+                    To view this video please enable JavaScript, and consider upgrading to a
+                    web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                </p>
+            </video>
+            
+            <div class="status-bar">
+                <div class="status-indicator">
+                    <div class="live-indicator"></div>
+                    <span>LIVE</span>
+                </div>
+                <div>Stream Quality: Auto</div>
+                <div id="connection-status"><i class="fas fa-circle" style="color: #0f0;"></i> Stable Connection</div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <a href="https://t.me/real_apk" class="telegram-btn" target="_blank">
+            <i class="fab fa-telegram"></i>
+            JOIN OUR TELEGRAM
+        </a>
+        <p>© 2024 Cricket Streaming. All rights reserved.</p>
+    </footer>
+
+    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-contrib-quality-levels/2.1.0/videojs-contrib-quality-levels.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-hls-quality-selector/1.1.4/videojs-hls-quality-selector.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the player
+            const player = videojs('stream-player', {
+                fluid: true,
+                responsive: true,
+                liveui: true,
+                controlBar: {
+                    children: [
+                        'playToggle',
+                        'volumePanel',
+                        'currentTimeDisplay',
+                        'timeDivider',
+                        'durationDisplay',
+                        'progressControl',
+                        'liveDisplay',
+                        'remainingTimeDisplay',
+                        'customControlSpacer',
+                        'playbackRateMenuButton',
+                        'qualitySelector',
+                        'fullscreenToggle'
+                    ]
+                }
+            });
+            
+            // Enable quality selector
+            player.ready(function() {
+                if (player.tech_.sourceHandler_ && player.tech_.sourceHandler_.name === 'hls') {
+                    player.hlsQualitySelector = player.hlsQualitySelector({
+                        displayCurrentQuality: true,
+                        placementIndex: 1,
+                        vjsIconClass: 'vjs-icon-cog'
+                    });
+                }
+            });
+            
+            // Connection status monitoring
+            let connectionStatus = document.getElementById('connection-status');
+            let lastUpdateTime = Date.now();
+            
+            player.on('error', function() {
+                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #f00;"></i> Connection Error';
+            });
+            
+            player.on('playing', function() {
+                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #0f0;"></i> Stable Connection';
+            });
+            
+            player.on('waiting', function() {
+                connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #ff0;"></i> Buffering...';
+            });
+            
+            // Check for stalled playback
+            setInterval(function() {
+                if (player.paused()) return;
+                
+                const currentTime = player.currentTime();
+                const now = Date.now();
+                
+                if (currentTime === lastUpdateTime && now - lastUpdateTime > 3000) {
+                    connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #f80;"></i> Slow Connection';
+                }
+                
+                lastUpdateTime = currentTime;
+            }, 1000);
+            
+            // Auto-retry on error
+            player.on('error', function() {
+                setTimeout(function()
