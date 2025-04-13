@@ -208,6 +208,14 @@
                 padding: 12px 20px;
             }
         }
+        
+        /* Disable right-click context menu */
+        .video-container {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
@@ -216,7 +224,7 @@
     </div>
     
     <div class="main-container">
-        <div class="video-container">
+        <div class="video-container" oncontextmenu="return false;">
             <video
                 id="cricket-stream"
                 class="video-js vjs-default-skin"
@@ -227,8 +235,7 @@
                 preload="auto"
                 poster="https://via.placeholder.com/1920x1080/000000/FFFFFF/?text=Loading+Cricket+Stream"
                 data-setup='{"autoplay": "muted"}'>
-                <!-- Replace with your working stream URL -->
-                <source src="https://v18tataplaysyndication.akamaized.net/bpk-tv/StarSports_2_Hin_HD_voot_MOB/output03/hdntl=exp=1744631889~acl=%2f*~data=hdntl~hmac=6ccd2c67d51f4f07c078a9f2145449815fe1a047dfc72d38cc1f29121d6f42b9/StarSports_2_Hin_HD_voot_MOB-audio_108038_hin=108000-video=1275600.m3u8" type="application/x-mpegURL">
+                <!-- No source URL in HTML -->
                 <p class="vjs-no-js">
                     To view this video please enable JavaScript, and consider upgrading to a
                     web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
@@ -260,8 +267,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     
     <script>
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+        
+        // Disable keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                (e.ctrlKey && e.shiftKey && e.key === 'J') || 
+                (e.ctrlKey && e.key === 'u') || 
+                (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+            }
+        });
+        
+        // Encrypted stream URL (base64 encoded)
+        const encryptedStreamUrl = 'aHR0cHM6Ly92MTh0YXRhcGxheXN5bmRpY2F0aW9uLmFrYW1haXplZC5uZXQvYnBrLXR2L1N0YXJTcG9ydHNfMl9IaW5fSERfdm9vdF9NT0Ivb3V0cHV0MDMvaGRudGw9ZXhwPTE3NDQ2MzE4ODl+YWNsPSUyZip+ZGF0YT1oZG50bH5obWFjPTZjY2QyYzY3ZDUxZjRmMDdjMDc4YTlmMjE0NTQ0OTgxNWZlMWEwNDdkZmM3MmQzOGNjMWYyOTEyMWQ2ZjQyYjkvU3RhclNwb3J0c18yX0hpbl9IRF92b290X01PQi1hdWRpb18xMDgwMzhfaGluPTEwODAwMC12aWRlbz0xMjc1NjAwLm0zdTg=';
+        
+        // Function to decode the URL
+        function decodeUrl(encoded) {
+            return atob(encoded);
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize player
+            // Initialize player with no source
             const player = videojs('cricket-stream', {
                 fluid: true,
                 responsive: true,
@@ -287,6 +319,17 @@
             
             // Remove big play button
             player.bigPlayButton.hide();
+            
+            // Set the source after a small delay to make it harder to intercept
+            setTimeout(function() {
+                const streamUrl = decodeUrl(encryptedStreamUrl);
+                player.src({
+                    src: streamUrl,
+                    type: 'application/x-mpegURL',
+                    withCredentials: false
+                });
+                player.play();
+            }, 500);
             
             // Enable quality selector
             player.ready(function() {
@@ -317,8 +360,9 @@
             player.on('error', function() {
                 connectionStatus.innerHTML = '<i class="fas fa-circle" style="color: #f00;"></i> Connection Error';
                 setTimeout(function() {
+                    const streamUrl = decodeUrl(encryptedStreamUrl);
                     player.src({
-                        src: player.currentSrc(),
+                        src: streamUrl,
                         type: 'application/x-mpegURL'
                     });
                     player.play();
@@ -336,6 +380,13 @@
             // Update quality display
             player.on('qualitychange', function() {
                 document.getElementById('stream-quality').textContent = 'Quality: ' + player.currentQuality();
+            });
+            
+            // Obfuscate player source in memory
+            Object.defineProperty(player, 'currentSrc', {
+                get: function() {
+                    return '';
+                }
             });
         });
     </script>
