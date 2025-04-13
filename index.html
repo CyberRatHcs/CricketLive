@@ -153,7 +153,7 @@
             padding: 12px 20px;
             background: rgba(0, 0, 0, 0.7);
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             font-size: 0.9rem;
             color: #ccc;
@@ -162,25 +162,8 @@
         .status-indicator {
             display: flex;
             align-items: center;
+            gap: 15px;
         }
-
-.vjs-zoom-buttons {
-            display: flex;
-            margin-left: auto;
-        }
-        
-        .vjs-zoom-in, .vjs-zoom-out {
-            cursor: pointer;
-            color: white;
-            padding: 0 10px;
-            font-size: 18px;
-        }
-        
-        .vjs-zoom-in:hover, .vjs-zoom-out:hover {
-            color: var(--neon-blue);
-        }
-        
-
         
         .live-indicator {
             width: 12px;
@@ -189,6 +172,30 @@
             border-radius: 50%;
             margin-right: 8px;
             animation: pulse 1.5s infinite;
+        }
+        
+        .zoom-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .zoom-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .zoom-btn:hover {
+            background: var(--neon-blue);
+            transform: scale(1.1);
         }
         
         @keyframes pulse {
@@ -209,8 +216,6 @@
         .vjs-progress-control {
             flex-grow: 1;
         }
-        
-        /* Custom zoom buttons */
         
         footer {
             text-align: center;
@@ -322,10 +327,21 @@
             </div>
             
             <div class="status-bar">
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoom-out-btn" title="Zoom Out">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <button class="zoom-btn" id="zoom-in-btn" title="Zoom In">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                </div>
+                
                 <div class="status-indicator">
                     <div class="live-indicator"></div>
                     <span>LIVE NOW</span>
                 </div>
+                
+                <div style="width: 68px;"></div> <!-- Spacer for balance -->
             </div>
         </div>
         
@@ -398,43 +414,24 @@
             // Remove big play button
             player.bigPlayButton.hide();
             
-            // Add custom zoom buttons
-            const zoomInBtn = document.createElement('div');
-            zoomInBtn.className = 'vjs-zoom-in';
-            zoomInBtn.innerHTML = '<i class="fas fa-search-plus"></i>';
-            zoomInBtn.title = 'Zoom In';
-            zoomInBtn.onclick = () => zoomVideo(1.2);
+            // Zoom functionality
+            const zoomInBtn = document.getElementById('zoom-in-btn');
+            const zoomOutBtn = document.getElementById('zoom-out-btn');
+            let currentZoom = 1;
             
-            const zoomOutBtn = document.createElement('div');
-            zoomOutBtn.className = 'vjs-zoom-out';
-            zoomOutBtn.innerHTML = '<i class="fas fa-search-minus"></i>';
-            zoomOutBtn.title = 'Zoom Out';
-            zoomOutBtn.onclick = () => zoomVideo(0.8);
-            
-            const zoomButtons = document.createElement('div');
-            zoomButtons.className = 'vjs-zoom-buttons vjs-control';
-            zoomButtons.appendChild(zoomInBtn);
-            zoomButtons.appendChild(zoomOutBtn);
-            
-            // Add zoom buttons to control bar
-            const controlBar = player.controlBar.el();
-            const fullscreenBtn = controlBar.querySelector('.vjs-fullscreen-control');
-            controlBar.insertBefore(zoomButtons, fullscreenBtn);
-            
-            // Video zoom function
             function zoomVideo(factor) {
                 const video = player.el().querySelector('video');
-                const currentTransform = window.getComputedStyle(video).transform;
-                let matrix = currentTransform === 'none' ? 
-                    [1, 0, 0, 1, 0, 0] : 
-                    currentTransform.match(/matrix\((.+)\)/)[1].split(',').map(Number);
+                currentZoom *= factor;
                 
-                // Apply scaling
-                matrix[0] *= factor;  // scaleX
-                matrix[3] *= factor;  // scaleY
+                // Limit zoom range (0.5x to 3x)
+                currentZoom = Math.max(0.5, Math.min(3, currentZoom));
                 
-                video.style.transform = `matrix(${matrix.join(',')})`;
+                video.style.transform = `scale(${currentZoom})`;
+                video.style.transformOrigin = 'center center';
             }
+            
+            zoomInBtn.addEventListener('click', () => zoomVideo(1.2));
+            zoomOutBtn.addEventListener('click', () => zoomVideo(0.8));
             
             // Set up retry button
             document.getElementById('retry-btn').addEventListener('click', function() {
