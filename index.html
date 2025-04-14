@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>Live IPL Watching</title>
+    <title>🔴 LIVE CRICKET STREAMING</title>
     <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -149,16 +149,69 @@
             font-size: 1.3rem;
         }
         
-        /* Added image style */
-        .center-image {
-            display: block;
-            width: 90px;
-            height: 90px;
-            margin: 15px auto;
+        /* Neon IPL Trophy Box */
+        .ipl-trophy-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            margin: 20px auto;
             border-radius: 50%;
-            border: 2px solid var(--neon-green);
-            box-shadow: 0 0 15px rgba(0, 255, 127, 0.5);
-            object-fit: cover;
+            background: linear-gradient(45deg, #000000, #1a1a2e);
+            position: relative;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+            text-decoration: none;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .ipl-trophy-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                var(--neon-orange),
+                var(--neon-blue),
+                var(--neon-green),
+                var(--neon-pink));
+            z-index: -1;
+            border-radius: 50%;
+            animation: borderGlow 4s linear infinite;
+            background-size: 400% 400%;
+        }
+        
+        .ipl-trophy-box:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.8);
+        }
+        
+        .ipl-trophy-box span {
+            display: block;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            width: 90%;
+            height: 90%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .ipl-trophy-box i {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            color: var(--neon-orange);
+            text-shadow: 0 0 10px rgba(255, 140, 0, 0.7);
         }
         
         .status-bar {
@@ -296,6 +349,16 @@
                 width: 240px;
                 padding: 12px 20px;
             }
+            
+            .ipl-trophy-box {
+                width: 100px;
+                height: 100px;
+                font-size: 1rem;
+            }
+            
+            .ipl-trophy-box i {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -361,8 +424,13 @@
             <i class="fab fa-telegram"></i> JOIN TELEGRAM CHANNEL
         </a>
         
-        <!-- Added 90x90px image below Telegram button -->
-        <img src="image.jpg" class="center-image" alt="Advertisement" width="90" height="90">
+        <!-- Neon TATA IPL Trophy Box -->
+        <a href="https://t.me/+ylnL4bR-7gg5ZTA1" class="ipl-trophy-box" target="_blank">
+            <span>
+                <i class="fas fa-trophy"></i>
+                TATA IPL 🏆
+            </span>
+        </a>
     </div>
 
     <footer>
