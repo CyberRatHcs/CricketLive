@@ -9,232 +9,267 @@
     <style>
         /* [Previous CSS styles remain the same] */
 
-        /* Live Chat Styles */
-        .live-chat-container {
+        /* Username Modal Styles */
+        .modal-overlay {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 350px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.8);
-            border: 2px solid var(--neon-blue);
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-            z-index: 1000;
-            display: none;
-        }
-        
-        .chat-header {
-            padding: 10px 15px;
-            background: rgba(0, 0, 0, 0.7);
-            border-bottom: 1px solid var(--neon-blue);
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            cursor: pointer;
+            z-index: 2000;
         }
         
-        .chat-header h3 {
-            margin: 0;
+        .username-modal {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            width: 300px;
+            text-align: center;
+        }
+        
+        .username-modal h3 {
+            margin-top: 0;
             color: var(--neon-blue);
         }
         
-        .chat-toggle {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-        
-        .chat-messages {
-            height: 200px;
-            overflow-y: auto;
+        .username-input {
+            width: 100%;
             padding: 10px;
-        }
-        
-        .chat-input {
-            display: flex;
-            padding: 10px;
-            border-top: 1px solid var(--neon-blue);
-        }
-        
-        .chat-input input {
-            flex: 1;
-            padding: 8px;
+            margin: 10px 0;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid var(--neon-blue);
             border-radius: 5px;
             color: white;
         }
         
-        .chat-input button {
-            margin-left: 10px;
-            padding: 8px 15px;
+        .username-submit {
+            padding: 8px 20px;
             background: var(--neon-blue);
             border: none;
             border-radius: 5px;
             color: black;
             cursor: pointer;
-        }
-        
-        .chat-message {
-            margin-bottom: 10px;
-            padding: 8px;
-            background: rgba(0, 255, 255, 0.1);
-            border-radius: 5px;
-            border-left: 3px solid var(--neon-blue);
-        }
-        
-        .chat-username {
             font-weight: bold;
-            color: var(--neon-blue);
         }
         
-        .open-chat-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background: var(--neon-blue);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-            z-index: 999;
+        .username-error {
+            color: #ff5555;
+            margin-top: 10px;
+            display: none;
         }
+
+        /* [Live Chat CSS from previous example remains the same] */
     </style>
 </head>
 <body>
     <!-- [Previous HTML remains the same] -->
 
-    <!-- Add this at the bottom of your body, before the scripts -->
-    <div class="open-chat-btn" id="open-chat-btn">
-        <i class="fas fa-comment-dots" style="font-size: 1.5rem;"></i>
+    <!-- Username Modal -->
+    <div class="modal-overlay" id="username-modal">
+        <div class="username-modal">
+            <h3>Enter Your Chat Username</h3>
+            <p>Choose a unique username to participate in the chat</p>
+            <input type="text" class="username-input" id="username-input" placeholder="Username" maxlength="20">
+            <div class="username-error" id="username-error">Username already taken!</div>
+            <button class="username-submit" id="username-submit">Continue</button>
+        </div>
     </div>
 
-    <div class="live-chat-container" id="live-chat">
-        <div class="chat-header" id="chat-header">
-            <h3>Live Chat</h3>
-            <button class="chat-toggle" id="minimize-chat">
-                <i class="fas fa-minus"></i>
-            </button>
-        </div>
-        <div class="chat-messages" id="chat-messages">
-            <!-- Messages will appear here -->
-            <div class="chat-message">
-                <span class="chat-username">Admin:</span> Welcome to the live chat!
-            </div>
-        </div>
-        <div class="chat-input">
-            <input type="text" id="chat-input" placeholder="Type your message...">
-            <button id="send-btn">Send</button>
-        </div>
-    </div>
+    <!-- [Live Chat HTML from previous example remains the same] -->
 
     <script>
-        // [Previous JavaScript remains the same until the end]
+        // [Previous JavaScript remains the same until the chat section]
 
-        // Live Chat Functionality
+        // Chat Implementation with Telegram Bot Integration
         document.addEventListener('DOMContentLoaded', function() {
+            // Telegram Bot Configuration
+            const TELEGRAM_BOT_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN';
+            const TELEGRAM_CHAT_ID = 'YOUR_TELEGRAM_CHAT_ID';
+            
+            // DOM Elements
+            const usernameModal = document.getElementById('username-modal');
+            const usernameInput = document.getElementById('username-input');
+            const usernameSubmit = document.getElementById('username-submit');
+            const usernameError = document.getElementById('username-error');
+            
             const chatContainer = document.getElementById('live-chat');
             const openChatBtn = document.getElementById('open-chat-btn');
-            const minimizeBtn = document.getElementById('minimize-chat');
-            const chatHeader = document.getElementById('chat-header');
             const chatMessages = document.getElementById('chat-messages');
             const chatInput = document.getElementById('chat-input');
             const sendBtn = document.getElementById('send-btn');
             
+            // Chat State
+            let currentUsername = getCookie('chat_username');
             let isChatOpen = false;
-            let isChatMinimized = false;
             
-            // Toggle chat window
-            openChatBtn.addEventListener('click', function() {
-                if (!isChatOpen) {
-                    chatContainer.style.display = 'block';
-                    isChatOpen = true;
-                    isChatMinimized = false;
-                } else if (isChatMinimized) {
-                    chatContainer.style.display = 'block';
-                    isChatMinimized = false;
-                }
+            // Check if username exists in cookie
+            if (!currentUsername) {
+                usernameModal.style.display = 'flex';
+            } else {
+                usernameModal.style.display = 'none';
+            }
+            
+            // Username Submission
+            usernameSubmit.addEventListener('click', setUsername);
+            usernameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') setUsername();
             });
             
-            // Minimize chat
-            minimizeBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                chatContainer.style.display = 'none';
-                isChatMinimized = true;
-            });
-            
-            // Close chat when clicking outside
-            document.addEventListener('click', function(e) {
-                if (isChatOpen && !chatContainer.contains(e.target) && e.target !== openChatBtn) {
-                    chatContainer.style.display = 'none';
-                    isChatMinimized = true;
-                }
-            });
-            
-            // Prevent chat from closing when clicking inside
-            chatContainer.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-            
-            // Send message
-            function sendMessage() {
-                const message = chatInput.value.trim();
-                if (message) {
-                    // In a real app, you would send this to your chat server
-                    const messageElement = document.createElement('div');
-                    messageElement.className = 'chat-message';
-                    messageElement.innerHTML = `
-                        <span class="chat-username">You:</span> ${message}
-                    `;
-                    chatMessages.appendChild(messageElement);
-                    chatInput.value = '';
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+            async function setUsername() {
+                const username = usernameInput.value.trim();
+                if (!username) return;
+                
+                try {
+                    // Check if username is available
+                    const response = await fetch('/check-username', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username })
+                    });
                     
-                    // Simulate response (in real app, this would come from server)
-                    setTimeout(() => {
-                        const responseElement = document.createElement('div');
-                        responseElement.className = 'chat-message';
-                        responseElement.innerHTML = `
-                            <span class="chat-username">Fan:</span> Great match today!
-                        `;
-                        chatMessages.appendChild(responseElement);
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    }, 1000);
+                    const data = await response.json();
+                    
+                    if (data.available) {
+                        // Set username cookie (expires in 30 days)
+                        setCookie('chat_username', username, 30);
+                        currentUsername = username;
+                        usernameModal.style.display = 'none';
+                        
+                        // Show welcome message
+                        addSystemMessage(`Welcome, ${username}! Start chatting now.`);
+                    } else {
+                        usernameError.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Error checking username:', error);
+                    addSystemMessage('Error connecting to chat service');
                 }
             }
             
-            sendBtn.addEventListener('click', sendMessage);
-            
-            chatInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendMessage();
+            // Chat Functions
+            openChatBtn.addEventListener('click', function() {
+                if (!currentUsername) {
+                    usernameModal.style.display = 'flex';
+                    return;
                 }
+                
+                chatContainer.style.display = 'block';
+                isChatOpen = true;
             });
             
-            // Sample messages (in real app, these would come from your chat server)
-            const sampleMessages = [
-                {user: "CricketFan22", message: "What an amazing shot!"},
-                {user: "MatchViewer", message: "Who will win today?"},
-                {user: "SportsLover", message: "The bowling is excellent today"}
-            ];
+            sendBtn.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
             
-            // Add sample messages
-            sampleMessages.forEach(msg => {
+            async function sendMessage() {
+                const message = chatInput.value.trim();
+                if (!message || !currentUsername) return;
+                
+                // Add message to local chat
+                addUserMessage(currentUsername, message);
+                chatInput.value = '';
+                
+                try {
+                    // Send message to server and Telegram
+                    const response = await fetch('/send-message', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: currentUsername,
+                            message: message
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!data.success) {
+                        addSystemMessage('Failed to send message');
+                    }
+                    
+                    // In a real app, you would receive messages via WebSocket
+                    // This is just simulating receiving messages
+                    setTimeout(() => {
+                        addUserMessage('OtherUser', 'Nice message!');
+                    }, 1000 + Math.random() * 2000);
+                    
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    addSystemMessage('Error sending message');
+                }
+            }
+            
+            function addUserMessage(username, message) {
                 const messageElement = document.createElement('div');
                 messageElement.className = 'chat-message';
                 messageElement.innerHTML = `
-                    <span class="chat-username">${msg.user}:</span> ${msg.message}
+                    <span class="chat-username">${username}:</span> ${message}
                 `;
                 chatMessages.appendChild(messageElement);
-            });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Send to Telegram bot
+                sendToTelegram(`${username}: ${message}`);
+            }
             
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            function addSystemMessage(message) {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'chat-message';
+                messageElement.style.color = 'var(--neon-green)';
+                messageElement.innerHTML = `⚡ ${message}`;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            function sendToTelegram(message) {
+                if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+                
+                fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message
+                    })
+                }).catch(error => {
+                    console.error('Error sending to Telegram:', error);
+                });
+            }
+            
+            // Cookie Functions
+            function setCookie(name, value, days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                const expires = "expires=" + date.toUTCString();
+                document.cookie = name + "=" + value + ";" + expires + ";path=/";
+            }
+            
+            function getCookie(name) {
+                const cookieName = name + "=";
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i];
+                    while (cookie.charAt(0) === ' ') {
+                        cookie = cookie.substring(1);
+                    }
+                    if (cookie.indexOf(cookieName) === 0) {
+                        return cookie.substring(cookieName.length, cookie.length);
+                    }
+                }
+                return "";
+            }
         });
     </script>
 </body>
