@@ -388,17 +388,17 @@
                 preload="auto"
                 poster="https://via.placeholder.com/1920x1080/000000/FFFFFF/?text=Loading+Cricket+Stream"
                 data-setup='{}'>
-                <source src="https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8">
+                <source src="https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8" type="application/x-mpegURL">
                 <p class="vjs-no-js">
                     To view this video please enable JavaScript, and consider upgrading to a
                     web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
                 </p>
             </video>
             
-            <div class="error-message" id="error-message">
+            <div class="error-message" id="error-message" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 20px; border-radius: 10px; text-align: center; z-index: 100;">
                 <h3>Stream Error</h3>
                 <p id="error-details">The stream could not be loaded. Please try again.</p>
-                <button class="retry-btn" id="retry-btn">Retry</button>
+                <button class="retry-btn" id="retry-btn" style="background: var(--neon-blue); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px;">Retry</button>
             </div>
             
             <div class="status-bar">
@@ -439,6 +439,7 @@
 
     <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
     <script>
         // Disable zooming and text selection
@@ -472,30 +473,95 @@
         
         // Initialize the player
         document.addEventListener('DOMContentLoaded', function() {
-            const player = videojs('cricket-stream', {
-                fluid: true,
-                responsive: true,
-                liveui: true,
-                autoplay: 'muted',
-                controlBar: {
-                    children: [
-                        'playToggle',
-                        'volumePanel',
-                        'currentTimeDisplay',
-                        'timeDivider',
-                        'durationDisplay',
-                        'progressControl',
-                        'liveDisplay',
-                        'remainingTimeDisplay',
-                        'customControlSpacer',
-                        'playbackRateMenuButton',
-                        'fullscreenToggle'
-                    ]
-                }
-            });
+            const videoElement = document.getElementById('cricket-stream');
+            let player;
+            
+            // Check if HLS is supported
+            if (Hls.isSupported()) {
+                const hls = new Hls({
+                    maxBufferLength: 30,
+                    maxMaxBufferLength: 600,
+                    maxBufferSize: 60 * 1000 * 1000,
+                    maxBufferHole: 5.0,
+                    enableWorker: true
+                });
+                
+                hls.loadSource('https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8');
+                hls.attachMedia(videoElement);
+                
+                player = videojs(videoElement, {
+                    fluid: true,
+                    responsive: true,
+                    liveui: true,
+                    autoplay: 'muted',
+                    controlBar: {
+                        children: [
+                            'playToggle',
+                            'volumePanel',
+                            'currentTimeDisplay',
+                            'timeDivider',
+                            'durationDisplay',
+                            'progressControl',
+                            'liveDisplay',
+                            'remainingTimeDisplay',
+                            'customControlSpacer',
+                            'playbackRateMenuButton',
+                            'fullscreenToggle'
+                        ]
+                    }
+                });
+                
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        switch(data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                showError("Network error. Trying to recover...");
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                showError("Media error. Attempting to recover...");
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                showError("Stream error. Please try again later.");
+                                break;
+                        }
+                    }
+                });
+            } 
+            // Fallback for native HLS support
+            else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                videoElement.src = 'https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8';
+                
+                player = videojs(videoElement, {
+                    fluid: true,
+                    responsive: true,
+                    liveui: true,
+                    autoplay: 'muted',
+                    controlBar: {
+                        children: [
+                            'playToggle',
+                            'volumePanel',
+                            'currentTimeDisplay',
+                            'timeDivider',
+                            'durationDisplay',
+                            'progressControl',
+                            'liveDisplay',
+                            'remainingTimeDisplay',
+                            'customControlSpacer',
+                            'playbackRateMenuButton',
+                            'fullscreenToggle'
+                        ]
+                    }
+                });
+            } else {
+                showError("Your browser doesn't support HLS streaming. Please try a different browser.");
+            }
             
             // Remove big play button
-            player.bigPlayButton.hide();
+            if (player) {
+                player.bigPlayButton.hide();
+            }
             
             // Zoom functionality
             const zoomInBtn = document.getElementById('zoom-in-btn');
@@ -503,7 +569,7 @@
             let currentZoom = 1;
             
             function zoomVideo(factor) {
-                const video = player.el().querySelector('video');
+                const video = videoElement.querySelector('video') || videoElement;
                 currentZoom *= factor;
                 
                 // Limit zoom range (0.5x to 3x)
@@ -519,34 +585,40 @@
             // Set up retry button
             document.getElementById('retry-btn').addEventListener('click', function() {
                 hideError();
-                player.src({
-                    src: player.currentSrc(),
-                    type: 'application/x-mpegURL'
-                });
-                player.play();
-            });
-            
-            // Connection status monitoring
-            player.on('error', function() {
-                showError("Stream connection lost. Trying to reconnect...");
-                
-                setTimeout(function() {
+                if (player) {
                     player.src({
-                        src: player.currentSrc(),
+                        src: 'https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8',
                         type: 'application/x-mpegURL'
                     });
                     player.play();
-                }, 3000);
+                } else {
+                    location.reload();
+                }
             });
             
-            player.on('playing', function() {
-                hideError();
-                hideLoading();
-            });
-            
-            player.on('waiting', function() {
-                showLoading();
-            });
+            // Connection status monitoring
+            if (player) {
+                player.on('error', function() {
+                    showError("Stream connection lost. Trying to reconnect...");
+                    
+                    setTimeout(function() {
+                        player.src({
+                            src: 'https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8',
+                            type: 'application/x-mpegURL'
+                        });
+                        player.play();
+                    }, 3000);
+                });
+                
+                player.on('playing', function() {
+                    hideError();
+                    hideLoading();
+                });
+                
+                player.on('waiting', function() {
+                    showLoading();
+                });
+            }
             
             // Swipe to refresh implementation
             const mainContainer = document.getElementById('main-container');
@@ -595,11 +667,15 @@
                     refreshIndicator.style.opacity = 1;
                     
                     // Reload the stream
-                    player.src({
-                        src: player.currentSrc(),
-                        type: 'application/x-mpegURL'
-                    });
-                    player.play();
+                    if (player) {
+                        player.src({
+                            src: 'https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8',
+                            type: 'application/x-mpegURL'
+                        });
+                        player.play();
+                    } else {
+                        location.reload();
+                    }
                     
                     setTimeout(function() {
                         refreshIndicator.style.opacity = 0;
