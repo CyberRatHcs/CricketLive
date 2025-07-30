@@ -1,716 +1,222 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>🔴 LIVE CRICKET STREAMING</title>
-    <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REAL APK - by Shankar Sharma</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
         :root {
-            --neon-pink: #ff00ff;
-            --neon-blue: #00ffff;
-            --neon-green: #00ff7f;
-            --neon-purple: #9400d3;
-            --neon-orange: #ff8c00;
+            --neon-pink: #ff2d75;
+            --neon-blue: #00f2ff;
+            --neon-purple: #9600ff;
+            --neon-green: #00ff7a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #000000, #1a1a2e);
+            font-family: 'Poppins', sans-serif;
             color: white;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
             overflow-x: hidden;
-            touch-action: pan-y;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        
-        .header {
+            background-color: #0a0a10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            border-bottom: 3px solid var(--neon-orange);
-            box-shadow: 0 0 20px rgba(255, 140, 0, 0.3);
-            position: relative;
-            z-index: 10;
         }
         
-        .header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            background: linear-gradient(to right, var(--neon-blue), var(--neon-green));
+        .content {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+            max-width: 600px;
+        }
+        
+        .logo-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        .logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--neon-purple);
+            box-shadow: 0 0 20px rgba(150, 0, 255, 0.8),
+                        0 0 40px rgba(150, 0, 255, 0.6),
+                        0 0 60px rgba(150, 0, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 0 30px rgba(150, 0, 255, 1),
+                        0 0 50px rgba(150, 0, 255, 0.8),
+                        0 0 70px rgba(150, 0, 255, 0.6);
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--neon-pink), var(--neon-blue));
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 45, 117, 0.3),
+                         0 0 20px rgba(0, 242, 255, 0.3);
             animation: glow 2s ease-in-out infinite alternate;
         }
         
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
-            }
-            to {
-                text-shadow: 0 0 15px var(--neon-green), 0 0 25px var(--neon-green);
-            }
-        }
-        
-        .main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-        }
-        
-        .video-container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-            border: 4px solid var(--neon-purple);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(148, 0, 211, 0.5);
-            background: #000;
-            position: relative;
-        }
-        
-        .video-container::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
-            background: linear-gradient(45deg, 
-                var(--neon-pink), 
-                var(--neon-blue), 
-                var(--neon-green), 
-                var(--neon-orange));
-            z-index: -1;
-            border-radius: 16px;
-            animation: borderGlow 4s linear infinite;
-            background-size: 400% 400%;
-        }
-        
-        @keyframes borderGlow {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-        
-        .video-js {
-            width: 100%;
-            height: 0;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
-            background: #000;
+        .developer {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: rgba(255,255,255,0.8);
+            text-shadow: 0 0 5px #fff;
         }
         
         .telegram-btn {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            width: 280px;
-            margin: 25px auto;
-            padding: 15px 25px;
-            background: linear-gradient(45deg, #0088cc, #00bfff);
+            background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
             color: white;
-            text-decoration: none;
-            font-weight: bold;
+            padding: 15px 30px;
             border-radius: 50px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            box-shadow: 0 0 15px rgba(255, 45, 117, 0.6),
+                        0 0 30px rgba(150, 0, 255, 0.4);
             transition: all 0.3s ease;
-            font-size: 1.1rem;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .telegram-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255,255,255,0.3) 0%,
+                rgba(255,255,255,0) 60%
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
         }
         
         .telegram-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 30px rgba(0, 191, 255, 0.8);
-            background: linear-gradient(45deg, #00bfff, #0088cc);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(255, 45, 117, 0.8),
+                        0 0 40px rgba(150, 0, 255, 0.6);
         }
         
         .telegram-btn i {
+            font-size: 1.8rem;
             margin-right: 10px;
-            font-size: 1.3rem;
         }
         
-        /* Neon IPL Trophy Box */
-        .ipl-trophy-box {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 120px;
-            height: 120px;
-            margin: 20px auto;
+        /* Neon Background Elements */
+        .neon-circle {
+            position: fixed;
             border-radius: 50%;
-            background: linear-gradient(45deg, #000000, #1a1a2e);
-            position: relative;
-            cursor: pointer;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: white;
-            text-decoration: none;
-            overflow: hidden;
-            box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
-            transition: all 0.3s ease;
+            filter: blur(80px);
+            opacity: 0.5;
+            z-index: 0;
+            animation: float 15s ease-in-out infinite;
         }
         
-        .ipl-trophy-box::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, 
-                var(--neon-orange),
-                var(--neon-blue),
-                var(--neon-green),
-                var(--neon-pink));
-            z-index: -1;
-            border-radius: 50%;
-            animation: borderGlow 4s linear infinite;
-            background-size: 400% 400%;
+        .circle-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--neon-pink);
+            top: 10%;
+            left: 10%;
         }
         
-        .ipl-trophy-box:hover {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 0 30px rgba(255, 140, 0, 0.8);
-        }
-        
-        .ipl-trophy-box span {
-            display: block;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 50%;
-            width: 90%;
-            height: 90%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        
-        .ipl-trophy-box i {
-            font-size: 2rem;
-            margin-bottom: 5px;
-            color: var(--neon-orange);
-            text-shadow: 0 0 10px rgba(255, 140, 0, 0.7);
-        }
-        
-        .status-bar {
-            padding: 12px 20px;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-            color: #ccc;
-        }
-        
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .live-indicator {
-            width: 12px;
-            height: 12px;
-            background-color: #ff0000;
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 1.5s infinite;
-        }
-        
-        .zoom-controls {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .zoom-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .zoom-btn:hover {
+        .circle-2 {
+            width: 500px;
+            height: 500px;
             background: var(--neon-blue);
-            transform: scale(1.1);
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 2s;
+            animation-duration: 18s;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-            100% { transform: scale(0.95); opacity: 1; }
-        }
-        
-        .vjs-control-bar {
-            background: rgba(0, 0, 0, 0.7) !important;
-            height: 50px !important;
-        }
-        
-        .vjs-big-play-button {
-            display: none !important;
-        }
-        
-        .vjs-progress-control {
-            flex-grow: 1;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 15px;
-            font-size: 0.8rem;
-            color: #aaa;
-        }
-        
-        /* Refresh indicator */
-        .refresh-indicator {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 60px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-        
-        .refresh-icon {
-            margin-right: 8px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Loading spinner */
-        .loading-spinner {
-            display: none;
-            position: absolute;
+        .circle-3 {
+            width: 300px;
+            height: 300px;
+            background: var(--neon-purple);
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 10;
+            left: 20%;
+            animation-delay: 4s;
+            animation-duration: 12s;
         }
         
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--neon-blue);
-            animation: spin 1s ease-in-out infinite;
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(50px, 80px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px rgba(255, 45, 117, 0.3),
+                             0 0 20px rgba(0, 242, 255, 0.3);
+            }
+            to {
+                text-shadow: 0 0 15px rgba(255, 45, 117, 0.6),
+                             0 0 25px rgba(0, 242, 255, 0.6);
+            }
+        }
+        
+        @keyframes shine {
+            to {
+                transform: translateX(100%) rotate(30deg);
+            }
         }
         
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8rem;
+            h1 {
+                font-size: 2.5rem;
             }
             
-            .video-container {
-                border-width: 3px;
-                border-radius: 8px;
+            .logo {
+                width: 120px;
+                height: 120px;
             }
             
-            .telegram-btn {
-                width: 240px;
-                padding: 12px 20px;
-            }
-            
-            .ipl-trophy-box {
-                width: 100px;
-                height: 100px;
-                font-size: 1rem;
-            }
-            
-            .ipl-trophy-box i {
-                font-size: 1.5rem;
+            .neon-circle {
+                filter: blur(60px);
             }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="header">
-        <h1>WATCH LIVE CRICKET</h1>
-    </div>
+    <!-- Neon Background Circles -->
+    <div class="neon-circle circle-1"></div>
+    <div class="neon-circle circle-2"></div>
+    <div class="neon-circle circle-3"></div>
     
-    <div class="main-container" id="main-container">
-        <div class="refresh-indicator" id="refresh-indicator">
-            <i class="fas fa-sync-alt refresh-icon"></i>
-            <span>Release to refresh</span>
+    <div class="content">
+        <div class="logo-container">
+            <img src="https://criticalserversystem.site/SHANKAR.png" alt="REAL APK Logo" class="logo">
         </div>
-        
-        <div class="loading-spinner" id="loading-spinner">
-            <div class="spinner"></div>
-        </div>
-        
-        <div class="video-container" oncontextmenu="return false;">
-            <video
-                id="cricket-stream"
-                class="video-js vjs-default-skin"
-                controls
-                autoplay
-                muted
-                playsinline
-                preload="auto"
-                poster="https://via.placeholder.com/1920x1080/000000/FFFFFF/?text=Loading+Cricket+Stream"
-                data-setup='{}'>
-                <source src="https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8" type="application/x-mpegURL">
-                <p class="vjs-no-js">
-                    To view this video please enable JavaScript, and consider upgrading to a
-                    web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-                </p>
-            </video>
-            
-            <div class="error-message" id="error-message" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); padding: 20px; border-radius: 10px; text-align: center; z-index: 100;">
-                <h3>Stream Error</h3>
-                <p id="error-details">The stream could not be loaded. Please try again.</p>
-                <button class="retry-btn" id="retry-btn" style="background: var(--neon-blue); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px;">Retry</button>
-            </div>
-            
-            <div class="status-bar">
-                <div class="zoom-controls">
-                    <button class="zoom-btn" id="zoom-out-btn" title="Zoom Out">
-                        <i class="fas fa-search-minus"></i>
-                    </button>
-                    <button class="zoom-btn" id="zoom-in-btn" title="Zoom In">
-                        <i class="fas fa-search-plus"></i>
-                    </button>
-                </div>
-                
-                <div class="status-indicator">
-                    <div class="live-indicator"></div>
-                    <span>LIVE NOW</span>
-                </div>
-                
-                <div style="width: 68px;"></div> <!-- Spacer for balance -->
-            </div>
-        </div>
-        
-        <a href="https://t.me/+ylnL4bR-7gg5ZTA1" class="telegram-btn" target="_blank">
-            <i class="fab fa-telegram"></i> JOIN TELEGRAM CHANNEL
-        </a>
-        
-        <!-- Neon TATA IPL Trophy Box -->
-        <a href="https://t.me/+ylnL4bR-7gg5ZTA1" class="ipl-trophy-box" target="_blank">
-            <span>
-                <i class="fas fa-trophy"></i>
-                TATA IPL 🏆
-            </span>
+        <h1>REAL APK</h1>
+        <p class="developer">by Shankar Sharma</p>
+        <a href="https://t.me/real_apk" class="telegram-btn" target="_blank">
+            <i class="fab fa-telegram"></i> Join Telegram Channel
         </a>
     </div>
-
-    <footer>
-        Enjoy the match! Pull down to refresh if stream stops working.
-    </footer>
-
-    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    
-    <script>
-        // Disable zooming and text selection
-        document.addEventListener('keydown', function(e) {
-            // Disable zooming with Ctrl+Plus/Minus
-            if ((e.ctrlKey && (e.key === '+' || e.key === '-')) || e.key === 'ZoomIn' || e.key === 'ZoomOut') {
-                e.preventDefault();
-            }
-            
-            // Disable developer tools
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
-                e.preventDefault();
-            }
-        });
-        
-        // Disable pinch zoom on touch devices
-        document.addEventListener('touchmove', function(e) {
-            if (e.scale !== 1) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-        
-        // Disable text selection and context menu
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
-        
-        document.addEventListener('selectstart', function(e) {
-            e.preventDefault();
-        });
-        
-        // Initialize the player
-        document.addEventListener('DOMContentLoaded', function() {
-            const videoElement = document.getElementById('cricket-stream');
-            let player;
-            
-            // Check if HLS is supported
-            if (Hls.isSupported()) {
-                const hls = new Hls({
-                    maxBufferLength: 30,
-                    maxMaxBufferLength: 600,
-                    maxBufferSize: 60 * 1000 * 1000,
-                    maxBufferHole: 5.0,
-                    enableWorker: true
-                });
-                
-                hls.loadSource('https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8');
-                hls.attachMedia(videoElement);
-                
-                player = videojs(videoElement, {
-                    fluid: true,
-                    responsive: true,
-                    liveui: true,
-                    autoplay: 'muted',
-                    controlBar: {
-                        children: [
-                            'playToggle',
-                            'volumePanel',
-                            'currentTimeDisplay',
-                            'timeDivider',
-                            'durationDisplay',
-                            'progressControl',
-                            'liveDisplay',
-                            'remainingTimeDisplay',
-                            'customControlSpacer',
-                            'playbackRateMenuButton',
-                            'fullscreenToggle'
-                        ]
-                    }
-                });
-                
-                hls.on(Hls.Events.ERROR, function(event, data) {
-                    if (data.fatal) {
-                        switch(data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                showError("Network error. Trying to recover...");
-                                hls.startLoad();
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                showError("Media error. Attempting to recover...");
-                                hls.recoverMediaError();
-                                break;
-                            default:
-                                showError("Stream error. Please try again later.");
-                                break;
-                        }
-                    }
-                });
-            } 
-            // Fallback for native HLS support
-            else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-                videoElement.src = 'https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8';
-                
-                player = videojs(videoElement, {
-                    fluid: true,
-                    responsive: true,
-                    liveui: true,
-                    autoplay: 'muted',
-                    controlBar: {
-                        children: [
-                            'playToggle',
-                            'volumePanel',
-                            'currentTimeDisplay',
-                            'timeDivider',
-                            'durationDisplay',
-                            'progressControl',
-                            'liveDisplay',
-                            'remainingTimeDisplay',
-                            'customControlSpacer',
-                            'playbackRateMenuButton',
-                            'fullscreenToggle'
-                        ]
-                    }
-                });
-            } else {
-                showError("Your browser doesn't support HLS streaming. Please try a different browser.");
-            }
-            
-            // Remove big play button
-            if (player) {
-                player.bigPlayButton.hide();
-            }
-            
-            // Zoom functionality
-            const zoomInBtn = document.getElementById('zoom-in-btn');
-            const zoomOutBtn = document.getElementById('zoom-out-btn');
-            let currentZoom = 1;
-            
-            function zoomVideo(factor) {
-                const video = videoElement.querySelector('video') || videoElement;
-                currentZoom *= factor;
-                
-                // Limit zoom range (0.5x to 3x)
-                currentZoom = Math.max(0.5, Math.min(3, currentZoom));
-                
-                video.style.transform = `scale(${currentZoom})`;
-                video.style.transformOrigin = 'center center';
-            }
-            
-            zoomInBtn.addEventListener('click', () => zoomVideo(1.2));
-            zoomOutBtn.addEventListener('click', () => zoomVideo(0.8));
-            
-            // Set up retry button
-            document.getElementById('retry-btn').addEventListener('click', function() {
-                hideError();
-                if (player) {
-                    player.src({
-                        src: 'https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8',
-                        type: 'application/x-mpegURL'
-                    });
-                    player.play();
-                } else {
-                    location.reload();
-                }
-            });
-            
-            // Connection status monitoring
-            if (player) {
-                player.on('error', function() {
-                    showError("Stream connection lost. Trying to reconnect...");
-                    
-                    setTimeout(function() {
-                        player.src({
-                            src: 'https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8',
-                            type: 'application/x-mpegURL'
-                        });
-                        player.play();
-                    }, 3000);
-                });
-                
-                player.on('playing', function() {
-                    hideError();
-                    hideLoading();
-                });
-                
-                player.on('waiting', function() {
-                    showLoading();
-                });
-            }
-            
-            // Swipe to refresh implementation
-            const mainContainer = document.getElementById('main-container');
-            const refreshIndicator = document.getElementById('refresh-indicator');
-            let touchStartY = 0;
-            let currentY = 0;
-            let isRefreshing = false;
-            
-            mainContainer.addEventListener('touchstart', function(e) {
-                if (window.scrollY === 0 && !isRefreshing) {
-                    touchStartY = e.touches[0].clientY;
-                }
-            }, { passive: true });
-            
-            mainContainer.addEventListener('touchmove', function(e) {
-                if (!touchStartY) return;
-                
-                currentY = e.touches[0].clientY;
-                const scrollY = window.scrollY;
-                
-                // Only trigger refresh if at top of page
-                if (scrollY === 0) {
-                    const distance = currentY - touchStartY;
-                    
-                    if (distance > 0) {
-                        e.preventDefault();
-                        refreshIndicator.style.opacity = Math.min(1, distance / 100);
-                        
-                        if (distance > 150) {
-                            refreshIndicator.querySelector('span').textContent = 'Release to refresh';
-                        } else {
-                            refreshIndicator.querySelector('span').textContent = 'Pull down to refresh';
-                        }
-                    }
-                }
-            }, { passive: false });
-            
-            mainContainer.addEventListener('touchend', function(e) {
-                if (!touchStartY) return;
-                
-                const distance = currentY - touchStartY;
-                
-                if (distance > 150 && window.scrollY === 0) {
-                    isRefreshing = true;
-                    refreshIndicator.querySelector('span').textContent = 'Refreshing...';
-                    refreshIndicator.style.opacity = 1;
-                    
-                    // Reload the stream
-                    if (player) {
-                        player.src({
-                            src: 'https://user65873.hls-video.net/hls/token/a3f0c81db39d64f85b6f6a5cfaa1b2ce/stream.m3u8',
-                            type: 'application/x-mpegURL'
-                        });
-                        player.play();
-                    } else {
-                        location.reload();
-                    }
-                    
-                    setTimeout(function() {
-                        refreshIndicator.style.opacity = 0;
-                        isRefreshing = false;
-                    }, 1000);
-                } else {
-                    refreshIndicator.style.opacity = 0;
-                }
-                
-                touchStartY = 0;
-                currentY = 0;
-            }, { passive: true });
-            
-            // Helper functions
-            function showError(message) {
-                const errorMsg = document.getElementById('error-message');
-                const errorDetails = document.getElementById('error-details');
-                errorDetails.textContent = message;
-                errorMsg.style.display = 'block';
-                document.getElementById('loading-spinner').style.display = 'none';
-            }
-            
-            function hideError() {
-                document.getElementById('error-message').style.display = 'none';
-            }
-            
-            function showLoading() {
-                document.getElementById('loading-spinner').style.display = 'block';
-                hideError();
-            }
-            
-            function hideLoading() {
-                document.getElementById('loading-spinner').style.display = 'none';
-            }
-        });
-    </script>
 </body>
 </html>
